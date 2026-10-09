@@ -68,7 +68,7 @@ contains
     uy1=zero
     uz1=zero
     
-    call base_flow(ux0,uy0,uz0,ra)
+    call base_flow(ux0,uy0,uz0,ra) ! for Uc = Ub and Tc = RemPrAh adimensionalization.
     
     call perturbation(p2d_ux1,p2d_uy1,p2d_uz1,alpha_ci,zero,amp_2d,urread_2d,uiread_2d,vrread_2d,viread_2d,wrread_2d,wiread_2d)
     
@@ -87,21 +87,22 @@ contains
     ! de Chen 1996. Pablo Szuban utiliza la misma adimensionalización, la cual es diferente a la adimensionalización 
     ! que yo utilizo y que está configurado en esta versión del codigo de XC3D. 
     ! OJO: take into account that the perturbations are normalizad with 1, so maybe they shouldn't be multiplied by 2/3. I will check this later.
+    ! Yes do not multiply by 2/3 and RePr                             
 !####################################################################################################################       
     
-    ux1 = (ux0 + p2d_ux1 + 0.5 * (p3d_pbeta_ux1 + p3d_mbeta_ux1) ) * (two/three) 
-    uy1 = (uy0 + p2d_uy1 + 0.5 * (p3d_pbeta_uy1 + p3d_mbeta_uy1) ) * (two/three) 
-    uz1 = (uz0 + p2d_uz1 + 0.5 * (p3d_pbeta_uz1 + p3d_mbeta_uz1) ) * (two/three) 
+    ux1 = (ux0) * (two/three)  + p2d_ux1 + 0.5 * (p3d_pbeta_ux1 + p3d_mbeta_ux1) 
+    uy1 = (uy0) * (two/three)  + p2d_uy1 + 0.5 * (p3d_pbeta_uy1 + p3d_mbeta_uy1)
+    uz1 = (uz0) * (two/three)  + p2d_uz1 + 0.5 * (p3d_pbeta_uz1 + p3d_mbeta_uz1)
 
 	 if (iscalar==1) then
 			
-			call base_flow_scalar(phi10,ra)
+			call base_flow_scalar(phi10,ra) ! for Uc = Ub and Tc = RemPrAh adimensionalization.
 
     	call perturbation_scalar(p2d_phi1,alpha_ci,zero,amp_2d,phirread_2d,phiiread_2d)
     	call perturbation_scalar(p3d_pbeta_phi1,alpha_ci,beta_ci,amp_3d,phirread_3d_pbeta,phiiread_3d_pbeta)
     	call perturbation_scalar(p3d_mbeta_phi1,alpha_ci,(-1) * beta_ci,amp_3d,phirread_3d_mbeta,phiiread_3d_mbeta) 
 
-    	phi1 = (phi10 + p2d_phi1 + 0.5 * (p3d_pbeta_phi1 + p3d_mbeta_phi1) ) * ( - (two/three) * re * sc(1) )
+    	phi1 = (phi10) * ( - (two/three) * re * sc(1) ) + p2d_phi1 + 0.5 * (p3d_pbeta_phi1 + p3d_mbeta_phi1)
 
     end if 
     
@@ -510,7 +511,7 @@ contains
 ! xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 ! SUBROUTINES FOR INPUT IN INITIAL CONDITIONS for laminar-turbulent transition mixed convection channel flow.
-
+! OJO: This base flow is calculated for Uc = Ub and Tc = RemPrAh adimensionalization. 
 	subroutine base_flow(ux,uy,uz,ra)
 	
     use decomp_2d
